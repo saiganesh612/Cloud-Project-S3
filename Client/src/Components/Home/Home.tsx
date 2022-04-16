@@ -11,7 +11,7 @@ const Home: React.FC = () => {
     return (
         <div className="Home">
             <div>
-                <h2>Memories Collection</h2>
+                <h2>Storage Collections</h2>
                 <button className="btn btn-dark btn-sm" onClick={() => loginWithRedirect()}>SignIn / SignUp</button>
             </div>
         </div>
