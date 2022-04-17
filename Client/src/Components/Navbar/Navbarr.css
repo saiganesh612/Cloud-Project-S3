@@ -16,3 +16,10 @@ nav {
 .navbar-nav button {
     height: 2rem;
 }
+
+#folder,
+#upload {
+    border: none;
+    background-color: snow;
+    color: grey;
+}

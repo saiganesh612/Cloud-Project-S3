@@ -8,15 +8,8 @@ const UserSchema = new mongoose.Schema({
     username: String,
     folders: [
         {
-            _id: false,
-            folderName: String,
-            files: [
-                {
-                    _id: false,
-                    fileName: String,
-                    src: String
-                }
-            ]
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Storage"
         }
     ]
 })

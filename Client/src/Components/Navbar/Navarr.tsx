@@ -2,6 +2,8 @@ import "./Navbarr.css"
 import { useAuth0 } from "@auth0/auth0-react"
 import { Avatar } from "@material-ui/core"
 import { Nav } from "react-bootstrap"
+import FolderModal from "../Modals/FolderModal"
+import UploadModal from "../Modals/UploadModal"
 
 const Navbarr: React.FC = () => {
     const { isAuthenticated, isLoading, user, logout, loginWithRedirect } = useAuth0();
@@ -17,8 +19,8 @@ const Navbarr: React.FC = () => {
                 </button>
                 <div className="collapse navbar-collapse" style={{ justifyContent: "end" }} id="navbarNavAltMarkup">
                     <div className="navbar-nav">
-                        {isAuthenticated && <a className="nav-link active" href="/">New Folder</a>}
-                        {isAuthenticated && <a className="nav-link active" href="/">Upload</a>}
+                        {isAuthenticated && <FolderModal />}
+                        {isAuthenticated && <UploadModal />}
                         {isLoading
                             ? <div style={{ display: "flex", alignItems: "center", marginLeft: "5px" }}>
                                 <div className="spinner-border text-primary" role="status">

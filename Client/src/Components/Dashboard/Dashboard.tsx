@@ -1,10 +1,11 @@
 import "./Dashboard.css"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAuth0 } from "@auth0/auth0-react"
 import axios from "axios"
 
 const Dashboard: React.FC = () => {
-    const { isAuthenticated, isLoading, user, error, loginWithRedirect } = useAuth0();
+    const [folders, setFolders] = useState<any[]>([])
+    const { isAuthenticated, isLoading, user, error, loginWithRedirect, getAccessTokenSilently } = useAuth0();
 
     useEffect(() => {
         if (error) {
@@ -17,6 +18,24 @@ const Dashboard: React.FC = () => {
                 .catch(err => console.log(err.response))
         }
     }, [error, isAuthenticated, user])
+
+    useEffect(() => {
+        const getFolders = async () => {
+            const token = await getAccessTokenSilently()
+
+            axios({
+                method: "GET",
+                url: `/get-folders?userId=${user?.sub}`,
+                headers: {
+                    "authorization": `Bearer ${token}`
+                }
+            })
+                .then(res => setFolders(res.data.folders))
+                .catch(error => console.log(error.response.data))
+        }
+
+        if (!isLoading) getFolders()
+    }, [getAccessTokenSilently, isLoading, user?.sub])
 
     if (isLoading) {
         return (
@@ -40,7 +59,22 @@ const Dashboard: React.FC = () => {
                         <p>Redirecting to login page...</p>
                     </div>
                 </div>
-                : <div>This is dashboard</div>
+                : <div className="container">
+                    <div className="row">
+                        {folders.map((folder, ind) => {
+                            return (
+                                <div className="col-4 my-3" key={ind}>
+                                    <div className="card">
+                                        <div className="card-body">
+                                            <h5 className="card-title">{folder?.folderName}</h5>
+                                            {/* <p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> */}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
             }
         </>
     )

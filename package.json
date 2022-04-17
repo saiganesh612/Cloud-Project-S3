@@ -19,6 +19,6 @@
     "express": "^4.17.3",
     "express-jwt": "^6.1.1",
     "jwks-rsa": "^2.0.5",
-    "mongoose": "^6.2.10"
+    "mongoose": "^6.3.0"
   }
 }
