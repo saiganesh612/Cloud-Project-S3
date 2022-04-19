@@ -4,3 +4,7 @@
     box-shadow: 0 2px 20px rgb(0 0 0 / 20%);
     border: none;
 }
+
+.card-body:hover {
+    cursor: pointer;
+}

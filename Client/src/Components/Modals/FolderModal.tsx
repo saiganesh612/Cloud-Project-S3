@@ -13,7 +13,6 @@ const FolderModal: React.FC = () => {
     const handleShow = () => setShow(true)
 
     const handleFolderCreation = async () => {
-        setSpin(true)
         if (!isAuthenticated) {
             alert("You need to be loggedIn to create any folder")
             return
@@ -23,6 +22,7 @@ const FolderModal: React.FC = () => {
             return
         }
 
+        setSpin(true)
         const token = await getAccessTokenSilently()
         const data = { folderName, id: user?.sub }
 

@@ -4,6 +4,10 @@ const User = require("../models/Users")
 const Storage = require("../models/Storage")
 const validateUser = require("../middlewares/user.validator")
 
+const multer = require("multer")
+const { storage } = require("../aws")
+const upload = multer({ storage })
+
 router.get("/get-folders", ...validateUser(), async (req, res) => {
     const { userId } = req.query
     try {
@@ -36,6 +40,24 @@ router.post("/create-new-folder", ...validateUser(), async (req, res) => {
     }
     catch (err) {
         res.status(403).json({ message: err })
+    }
+})
+
+router.post("/upload-file", ...validateUser(), upload.single("file"), async (req, res) => {
+    const { id, folderId } = req.body
+    const { originalname, location } = req.file
+    try {
+        const user = await User.findOne({ social: { $eq: id } })
+        if (!user) throw "Their is no user with this Id."
+
+        const _folder = await Storage.findOne({ _id: { $eq: folderId } })
+        if (!_folder) throw "Their is no folder with this identifier."
+
+        _folder.files.push({ fileName: originalname, src: location })
+        await _folder.save()
+        res.status(200).json({ message: "Uploaded", fid: _folder._id })
+    } catch (err) {
+        res.status(500).json({ message: err })
     }
 })
 

@@ -1,11 +1,13 @@
 import "./Dashboard.css"
 import { useEffect, useState } from "react"
 import { useAuth0 } from "@auth0/auth0-react"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 
 const Dashboard: React.FC = () => {
     const [folders, setFolders] = useState<any[]>([])
     const { isAuthenticated, isLoading, user, error, loginWithRedirect, getAccessTokenSilently } = useAuth0();
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (error) {
@@ -51,6 +53,10 @@ const Dashboard: React.FC = () => {
         loginWithRedirect()
     }
 
+    const redirectTo = (id: String) => {
+        navigate(`/folder/${id}`)
+    }
+
     return (
         <>
             {!isAuthenticated
@@ -65,9 +71,9 @@ const Dashboard: React.FC = () => {
                             return (
                                 <div className="col-4 my-3" key={ind}>
                                     <div className="card">
-                                        <div className="card-body">
+                                        <div className="card-body" onClick={() => redirectTo(folder?._id)}>
                                             <h5 className="card-title">{folder?.folderName}</h5>
-                                            {/* <p className="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p> */}
+                                            {/* <p className="card-text">Created On: </p> */}
                                         </div>
                                     </div>
                                 </div>
