@@ -12,6 +12,8 @@ const storage = multerS3({
     s3,
     acl: "public-read",
     bucket: process.env.BUCKET,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    contentDisposition: "inline",
     key: (req, file, cb) => {
         cb(null, file.originalname)
     }
