@@ -47,10 +47,20 @@ const UploadModal: React.FC = () => {
             alert("Enter Folder Name to store your file...")
             return
         }
-        const _folder = folders.find(folder => folder.folderName === folderName)
-        if (!_folder) {
-            alert("Their is no folder with this name.")
+        const mimeTypes = ["video/mp4", "image/png", "image/jpg", "image/jpeg"]
+        if (!mimeTypes.includes(file.type)) {
+            alert("The supported formats are .mp4, .jpg, .png, .jpeg")
             return
+        }
+
+        let _folder, folderId
+        if (window.location.pathname.includes("folder")) folderId = window.location.pathname.slice(8)
+        else {
+            _folder = folders.find(folder => folder.folderName === folderName)
+            if (!_folder) {
+                alert("Their is no folder with this name.")
+                return
+            }
         }
 
         setSpin(true)
@@ -59,7 +69,7 @@ const UploadModal: React.FC = () => {
         const formData = new FormData()
         formData.append("id", user?.sub!)
         formData.append("file", file)
-        formData.append("folderId", _folder._id)
+        formData.append("folderId", folderId || _folder._id)
 
         axios({
             method: "POST",
@@ -101,7 +111,7 @@ const UploadModal: React.FC = () => {
                         <div className="my-3">
                             <input className="form-control" type="file"
                                 id="file"
-                                accept=".png, .jpg, .jpeg, .mp4, .mkv, .webm"
+                                accept=".png, .jpg, .jpeg, .mp4"
                                 onChange={e => setFile((e.target.files as FileList)[0])}
                             />
                         </div>

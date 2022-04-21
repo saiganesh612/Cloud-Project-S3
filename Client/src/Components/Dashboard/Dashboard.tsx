@@ -67,18 +67,23 @@ const Dashboard: React.FC = () => {
                 </div>
                 : <div className="container">
                     <div className="row">
-                        {folders.map((folder, ind) => {
-                            return (
-                                <div className="col-4 my-3" key={ind}>
-                                    <div className="card">
-                                        <div className="card-body" onClick={() => redirectTo(folder?._id)}>
-                                            <h5 className="card-title">{folder?.folderName}</h5>
-                                            {/* <p className="card-text">Created On: </p> */}
+                        {!folders.length
+                            ? <div className="col">
+                                <p>Create folders to upload any new files...</p>
+                            </div>
+                            : folders.map((folder, ind) => {
+                                return (
+                                    <div className="col-4 my-3" key={ind}>
+                                        <div className="card">
+                                            <div className="card-body" onClick={() => redirectTo(folder?._id)}>
+                                                <h5 className="card-title">{folder?.folderName}</h5>
+                                                {/* <p className="card-text">Created On: </p> */}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )
-                        })}
+                                )
+                            })
+                        }
                     </div>
                 </div>
             }
