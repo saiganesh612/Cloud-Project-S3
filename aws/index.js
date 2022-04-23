@@ -19,4 +19,4 @@ const storage = multerS3({
     }
 })
 
-module.exports = { storage }
+module.exports = { storage, s3 }

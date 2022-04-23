@@ -19,6 +19,7 @@ const Navbarr: React.FC = () => {
                 </button>
                 <div className="collapse navbar-collapse" style={{ justifyContent: "end" }} id="navbarNavAltMarkup">
                     <div className="navbar-nav">
+                        {isAuthenticated && <a className="nav-link" href="/dashboard">Dashboard</a>}
                         {isAuthenticated && <FolderModal />}
                         {isAuthenticated && <UploadModal />}
                         {isLoading

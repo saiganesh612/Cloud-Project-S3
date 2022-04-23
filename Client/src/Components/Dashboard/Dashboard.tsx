@@ -3,9 +3,16 @@ import { useEffect, useState } from "react"
 import { useAuth0 } from "@auth0/auth0-react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import type { Data } from "../../Types/data"
+import { MoreVert, Folder } from '@material-ui/icons';
+import { Popover, OverlayTrigger, Button } from "react-bootstrap"
+import Delete from "../Modals/Delete"
 
 const Dashboard: React.FC = () => {
     const [folders, setFolders] = useState<any[]>([])
+    const [name, setName] = useState("")
+    const [showInput, setShowInput] = useState(false)
+
     const { isAuthenticated, isLoading, user, error, loginWithRedirect, getAccessTokenSilently } = useAuth0();
     const navigate = useNavigate()
 
@@ -53,8 +60,38 @@ const Dashboard: React.FC = () => {
         loginWithRedirect()
     }
 
-    const redirectTo = (id: String) => {
-        navigate(`/folder/${id}`)
+    const redirectTo = (id: String, files: Data[]) => {
+        navigate(`/folder/${id}`, {
+            state: files
+        })
+    }
+
+    const settings = (e: any) => {
+        e.preventDefault()
+        e.stopPropagation()
+    }
+
+    const handleChange = async (e: any, folderId: string) => {
+        if (e.key === 'Enter') {
+            const token = await getAccessTokenSilently()
+            const data = { name, userId: user?.sub, folderId }
+
+            axios({
+                method: "POST",
+                url: "/change-folder-name",
+                headers: {
+                    "authorization": `Bearer ${token}`
+                },
+                data
+            })
+                .then(() => {
+                    folders.forEach(folder => {
+                        if (folder._id === folderId) folder.folderName = name
+                    })
+                    setShowInput(false)
+                })
+                .catch(error => console.log(error.response.data))
+        }
     }
 
     return (
@@ -75,9 +112,35 @@ const Dashboard: React.FC = () => {
                                 return (
                                     <div className="col-4 my-3" key={ind}>
                                         <div className="card">
-                                            <div className="card-body" onClick={() => redirectTo(folder?._id)}>
-                                                <h5 className="card-title">{folder?.folderName}</h5>
-                                                {/* <p className="card-text">Created On: </p> */}
+                                            <div className="card-body" onClick={() => redirectTo(folder?._id, folder.files)}>
+                                                <h5 className="card-title">
+                                                    <div className="combo">
+                                                        <Folder /> {folder?.folderName}
+                                                    </div>
+                                                    <OverlayTrigger
+                                                        trigger="click"
+                                                        placement="auto"
+                                                        rootClose
+                                                        overlay={
+                                                            <Popover id="popover-basic">
+                                                                <Popover.Body onClick={(e: any) => settings(e)}>
+                                                                    <Button size="sm" className="popover-btn" onClick={() => setShowInput(!showInput)}>Rename</Button><br />
+                                                                    {showInput &&
+                                                                        <>
+                                                                            <input type="text" placeholder="Enter Name"
+                                                                                onChange={e => setName(e.target.value)}
+                                                                                onKeyDown={(e) => handleChange(e, folder._id)} />
+                                                                            <br />
+                                                                        </>
+                                                                    }
+                                                                    <Delete folderId={folder._id} />
+                                                                </Popover.Body>
+                                                            </Popover>
+                                                        }
+                                                    >
+                                                        <MoreVert onClick={(e) => settings(e)} />
+                                                    </OverlayTrigger>
+                                                </h5>
                                             </div>
                                         </div>
                                     </div>
