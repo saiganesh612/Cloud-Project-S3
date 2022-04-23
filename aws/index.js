@@ -15,7 +15,7 @@ const storage = multerS3({
     contentType: multerS3.AUTO_CONTENT_TYPE,
     contentDisposition: "inline",
     key: (req, file, cb) => {
-        cb(null, file.originalname)
+        cb(null, Date.now() + file.originalname)
     }
 })
 

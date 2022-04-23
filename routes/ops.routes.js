@@ -64,7 +64,7 @@ router.post("/create-new-folder", ...validateUser(), async (req, res) => {
 
 router.post("/upload-file", ...validateUser(), upload.single("file"), async (req, res) => {
     const { id, folderId } = req.body
-    const { originalname, location } = req.file
+    const { key, location } = req.file
     try {
         const user = await User.findOne({ social: { $eq: id } })
         if (!user) throw "Their is no user with this Id."
@@ -72,7 +72,7 @@ router.post("/upload-file", ...validateUser(), upload.single("file"), async (req
         const _folder = await Storage.findOne({ _id: { $eq: folderId } })
         if (!_folder) throw "Their is no folder with this identifier."
 
-        _folder.files.push({ fileName: originalname, src: location })
+        _folder.files.push({ fileName: key, src: location })
         await _folder.save()
         res.status(200).json({ message: "Uploaded", fid: _folder._id })
     } catch (err) {
