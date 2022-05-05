@@ -85,7 +85,12 @@ const UploadModal: React.FC = () => {
                 setSpin(false)
                 window.location.href = `/folder/${res.data.fid}`
             })
-            .catch(error => console.log(error.response.data))
+            .catch(error => {
+                console.log(error.response.data)
+                handleClose()
+                setSpin(false)
+                alert(error.response.data.message)
+            })
     }
 
     return (

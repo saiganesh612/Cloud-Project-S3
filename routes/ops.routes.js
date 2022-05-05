@@ -3,7 +3,7 @@ const router = express.Router()
 const User = require("../models/Users")
 const Storage = require("../models/Storage")
 const validateUser = require("../middlewares/user.validator")
-const { s3 } = require("../aws")
+const { s3, rekognition, deleteImage, generateParams } = require("../aws")
 
 const multer = require("multer")
 const { storage } = require("../aws")
@@ -66,15 +66,24 @@ router.post("/upload-file", ...validateUser(), upload.single("file"), async (req
     const { id, folderId } = req.body
     const { key, location } = req.file
     try {
-        const user = await User.findOne({ social: { $eq: id } })
-        if (!user) throw "Their is no user with this Id."
+        const params = generateParams(key)
+        rekognition.detectModerationLabels(params, async (err, data) => {
+            if (err || data.ModerationLabels.length) {
+                await deleteImage(key)
+                res.status(403).json({ message: "Uploaded media contents offensive content" })
+            }
+            else {
+                const user = await User.findOne({ social: { $eq: id } })
+                if (!user) throw "Their is no user with this Id."
 
-        const _folder = await Storage.findOne({ _id: { $eq: folderId } })
-        if (!_folder) throw "Their is no folder with this identifier."
+                const _folder = await Storage.findOne({ _id: { $eq: folderId } })
+                if (!_folder) throw "Their is no folder with this identifier."
 
-        _folder.files.push({ fileName: key, src: location })
-        await _folder.save()
-        res.status(200).json({ message: "Uploaded", fid: _folder._id })
+                _folder.files.push({ fileName: key, src: location })
+                await _folder.save()
+                res.status(200).json({ message: "Uploaded", fid: _folder._id })
+            }
+        })
     } catch (err) {
         console.log(err)
         res.status(500).json({ message: err })

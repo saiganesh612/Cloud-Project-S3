@@ -7,6 +7,27 @@ aws.config.update({
     region: process.env.REGION
 })
 
+const rekognition = new aws.Rekognition()
+
+const deleteImage = async filename => {
+    try {
+        s3.deleteObject({ Bucket: process.env.BUCKET, Key: filename }).promise()
+    } catch (err) {
+        return err
+    }
+}
+
+const generateParams = (name) => {
+    return {
+        Image: {
+            S3Object: {
+                Bucket: process.env.BUCKET,
+                Name: `${name}`
+            }
+        }
+    }
+}
+
 const s3 = new aws.S3()
 const storage = multerS3({
     s3,
@@ -19,4 +40,4 @@ const storage = multerS3({
     }
 })
 
-module.exports = { storage, s3 }
+module.exports = { storage, s3, deleteImage, rekognition, generateParams }
